@@ -39,8 +39,8 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-         {/* <AppLayout> */}
-        <AppRouter />
+      {/* <AppLayout> */}
+      <AppRouter />
       {/* </AppLayout> */}
       {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>

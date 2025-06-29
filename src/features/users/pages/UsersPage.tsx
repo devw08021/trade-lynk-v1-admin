@@ -13,8 +13,8 @@ import type { User, UserFilters, PaginationOptions, SortOptions } from '@/types'
 
 export const UsersPage: React.FC = () => {
     const [filters, setFilters] = React.useState<UserFilters>({})
-    const [pagination, setPagination] = React.useState<PaginationOptions>({ page: 1, limit: 20 })
-    const [sort, setSort] = React.useState<SortOptions>({ field: 'createdAt', direction: 'desc' })
+    const [pagination, setPagination] = React.useState<PaginationOptions>({ page: 0, limit: 20 })
+    const [sort, setSort] = React.useState<SortOptions>({ field: 'createdAt', direction: -1 })
     const [selectedUserId, setSelectedUserId] = React.useState<string | null>(null)
     const [isModalOpen, setIsModalOpen] = React.useState(false)
   
@@ -88,11 +88,11 @@ export const UsersPage: React.FC = () => {
                   <Users className={classNames.icon.sm} />
                   <span className={classNames.text.muted}>Showing</span>
                   <span className={`${classNames.text.body} font-semibold`}>
-                    {((pagination.page - 1) * pagination.limit) + 1}-{Math.min(pagination.page * pagination.limit, data.pagination.total)}
+                    {((pagination.page - 1) * pagination.limit) + 1}-{Math.min(pagination.page * pagination.limit, data?.pagination?.total)}
                   </span>
                   <span className={classNames.text.muted}>of</span>
                   <span className={`${classNames.text.body} font-semibold`}>
-                    {data.pagination.total.toLocaleString()}
+                    {data?.pagination?.total?.toLocaleString()}
                   </span>
                   <span className={classNames.text.muted}>users</span>
                 </div>
@@ -106,7 +106,7 @@ export const UsersPage: React.FC = () => {
               </div>
               
               <div className={classNames.text.muted}>
-                Page {pagination.page} of {data.pagination.totalPages}
+                Page {pagination?.page} of {data?.pagination?.totalPages}
               </div>
             </div>
           </BaseCard>

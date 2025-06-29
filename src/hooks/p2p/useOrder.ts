@@ -1,25 +1,25 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { userService } from '@/services/userService'
+import { orderService } from '@/services/p2p/orderService'
 import { toast } from 'react-hot-toast'
 import type { User, UserFilters, PaginationOptions, SortOptions } from '@/types'
 
-export function useUsers(
+export function userOrders(
   filters: UserFilters = {},
   pagination: PaginationOptions = { page: 0, limit: 20 },
   sort: SortOptions = { field: 'createdAt', direction: -1 }
 ) {
   return useQuery({
-    queryKey: ['users', filters, pagination, sort],
-    queryFn: () => userService.getUsers(filters, pagination, sort),
+    queryKey: ['order', filters, pagination, sort],
+    queryFn: () => orderService.getOrders(filters, pagination, sort),
     staleTime: 30000, // 30 seconds
     retry: 3,
   })
 }
 
-export function useUser(id: string) {
+export function userPair(id: string) {
   return useQuery({
     queryKey: ['user', id],
-    queryFn: () => userService.getUser(id),
+    queryFn: () => orderService.getPair(id),
     enabled: !!id,
   })
 }
@@ -29,7 +29,7 @@ export function useUserActions() {
 
   const banUser = useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
-      userService.banUser(id, reason),
+      orderService.banUser(id, reason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       toast.success('User banned successfully')
@@ -40,7 +40,7 @@ export function useUserActions() {
   })
 
   const unbanUser = useMutation({
-    mutationFn: (id: string) => userService.unbanUser(id),
+    mutationFn: (id: string) => orderService.unbanUser(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       toast.success('User unbanned successfully')
@@ -52,7 +52,7 @@ export function useUserActions() {
 
   const suspendUser = useMutation({
     mutationFn: ({ id, reason, duration }: { id: string; reason: string; duration?: number }) =>
-      userService.suspendUser(id, reason, duration),
+      orderService.suspendUser(id, reason, duration),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       toast.success('User suspended successfully')
@@ -62,8 +62,8 @@ export function useUserActions() {
     },
   })
 
-const resetTwoFactor = useMutation({
-    mutationFn: (id: string) => userService.resetTwoFactor(id),
+  const resetTwoFactor = useMutation({
+    mutationFn: (id: string) => orderService.resetTwoFactor(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       toast.success('Two-factor authentication reset successfully')
@@ -75,7 +75,7 @@ const resetTwoFactor = useMutation({
 
   const toggleWithdrawals = useMutation({
     mutationFn: ({ id, enabled }: { id: string; enabled: boolean }) =>
-      userService.toggleWithdrawals(id, enabled),
+      orderService.toggleWithdrawals(id, enabled),
     onSuccess: (_, { enabled }) => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       toast.success(`Withdrawals ${enabled ? 'enabled' : 'disabled'} successfully`)
@@ -87,7 +87,7 @@ const resetTwoFactor = useMutation({
 
   const updateUser = useMutation({
     mutationFn: ({ id, updates }: { id: string; updates: Partial<User> }) =>
-      userService.updateUser(id, updates),
+      orderService.updateUser(id, updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       toast.success('User updated successfully')
@@ -110,7 +110,7 @@ const resetTwoFactor = useMutation({
 export function useUserAuditLog(userId: string) {
   return useQuery({
     queryKey: ['userAuditLog', userId],
-    queryFn: () => userService.getUserAuditLog(userId),
+    queryFn: () => orderService.getUserAuditLog(userId),
     enabled: !!userId,
   })
 }

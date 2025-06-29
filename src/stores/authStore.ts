@@ -2,6 +2,24 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { User, Permission } from '@/types'
 
+// Optional dynamic base URL from .env or fallback
+const API_BASE_URL = import.meta.env.VITE_USER_API_URL
+
+// Utility: Safe error message extractor
+const getErrorMessage = (error: unknown): string => {
+  if (typeof error === 'string') return error
+  if (error instanceof Error) return error.message
+  if (typeof error === 'object' && error !== null) {
+    if ('message' in error && typeof error.message === 'string') {
+      return error.message
+    }
+    if ('error' in error && typeof (error as any).error?.message === 'string') {
+      return (error as any).error.message
+    }
+  }
+  return 'An unknown error occurred.'
+}
+
 interface AuthState {
   user: User | null
   token: string | null
@@ -24,7 +42,6 @@ interface AuthActions {
 export const useAuthStore = create<AuthState & AuthActions>()(
   persist(
     (set, get) => ({
-      // State
       user: null,
       token: null,
       permissions: [],
@@ -32,85 +49,84 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       isLoading: false,
       error: null,
 
-      // Actions
-      login: async (email: string, password: string) => {
+      login: async (email, password) => {
         set({ isLoading: true, error: null })
         try {
-          // Mock API call - replace with actual implementation
-          const response = await fetch('/api/auth/login', {
+          const response = await fetch(`${API_BASE_URL}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password }),
           })
-          
-          if (!response.ok) throw new Error('Login failed')
-          
-          const data = await response.json()
+
+          const { data } = await response.json()
+          if (!response.ok) {
+            throw new Error(getErrorMessage(data))
+          }
+
+          const { user, token, permissions } = data
           set({
-            user: data.user,
-            token: data.token,
-            permissions: data.permissions,
+            user,
+            token,
+            permissions,
             isAuthenticated: true,
             isLoading: false,
           })
         } catch (error) {
           set({
-            error: error instanceof Error ? error.message : 'Login failed',
+            error: getErrorMessage(error),
             isLoading: false,
           })
         }
       },
 
-      logout: () => {
+      logout: () =>
         set({
           user: null,
           token: null,
           permissions: [],
           isAuthenticated: false,
           error: null,
-        })
-      },
+        }),
 
       refreshToken: async () => {
         const { token } = get()
         if (!token) return
-        
+
         try {
-          const response = await fetch('/api/auth/refresh', {
+          const response = await fetch(`${API_BASE_URL}/refresh`, {
             headers: { Authorization: `Bearer ${token}` },
           })
-          
-          if (response.ok) {
-            const data = await response.json()
-            set({ token: data.token })
+
+          const data = await response.json()
+
+          if (!response.ok) {
+            console.warn('Token refresh failed:', getErrorMessage(data))
+            return
           }
+
+          set({ token: data.token })
         } catch (error) {
-          console.error('Token refresh failed:', error)
+          console.error('Token refresh error:', getErrorMessage(error))
         }
       },
 
-      updateUser: (updates: Partial<User>) => {
+      updateUser: updates => {
         const { user } = get()
-        if (user) {
-          set({ user: { ...user, ...updates } })
-        }
+        if (user) set({ user: { ...user, ...updates } })
       },
 
-      setLoading: (loading: boolean) => set({ isLoading: loading }),
-      setError: (error: string | null) => set({ error }),
+      setLoading: loading => set({ isLoading: loading }),
+      setError: error => set({ error }),
 
-      hasPermission: (permission: Permission) => {
-        const { permissions } = get()
-        return permissions?.includes(permission)
-      },
+      hasPermission: permission => get().permissions?.includes(permission),
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({
-        user: state.user,
-        token: state.token,
-        permissions: state.permissions,
-        isAuthenticated: state.isAuthenticated,
+      partialize: ({ user, token, permissions, isAuthenticated }) => ({
+        user,
+        token,
+        permissions,
+        isAuthenticated,
       }),
     }
   )

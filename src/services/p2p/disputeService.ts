@@ -1,8 +1,8 @@
-import { apiService } from './api'
+import { apiService } from '../api'
 import type { User, UserFilters, PaginationOptions, SortOptions, PaginatedResponse } from '@/types'
 
-export const userService = {
-  async getUsers(
+export const disputeService = {
+  async getDispute(
     filters: UserFilters = {},
     pagination: PaginationOptions = { page: 1, limit: 20 },
     sort: SortOptions = { field: 'createdAt', direction: 'desc' }
@@ -15,33 +15,33 @@ export const userService = {
       ...filters,
     }
 
-    return apiService.getPaginated<User>(`${import.meta.env.VITE_USER_API_URL}/users`, params)
+    return apiService.getPaginated<User>(`${import.meta.env.VITE_P2P_API_URL}/disputes`, params)
   },
 
-  async getUser(id: string): Promise<User> {
-    const response = await apiService.get<User>(`${import.meta.env.VITE_USER_API_URL}/users/${id}`)
+  async getPair(id: string): Promise<User> {
+    const response = await apiService.get<User>(`${import.meta.env.VITE_P2P_API_URL}/pairs/${id}`)
     return response.data!
   },
 
   async updateUser(id: string, updates: Partial<User>): Promise<User> {
-    const response = await apiService.put<User>(`/admin/users/${id}`, updates)
+    const response = await apiService.put<User>(`/admin/pairs/${id}`, updates)
     return response.data!
   },
 
   async banUser(id: string, reason: string): Promise<void> {
-    await apiService.post(`/admin/users/${id}/ban`, { reason })
+    await apiService.post(`/admin/pairs/${id}/ban`, { reason })
   },
 
   async unbanUser(id: string): Promise<void> {
-    await apiService.post(`/admin/users/${id}/unban`, {})
+    await apiService.post(`/admin/pairs/${id}/unban`, {})
   },
 
   async suspendUser(id: string, reason: string, duration?: number): Promise<void> {
-    await apiService.post(`/admin/users/${id}/suspend`, { reason, duration })
+    await apiService.post(`/admin/pairs/${id}/suspend`, { reason, duration })
   },
 
   async resetTwoFactor(id: string): Promise<void> {
-    await apiService.post(`/admin/users/${id}/reset-2fa`, {})
+    await apiService.post(`/admin/pairs/${id}/reset-2fa`, {})
   },
 
   async toggleWithdrawals(id: string, enabled: boolean): Promise<void> {

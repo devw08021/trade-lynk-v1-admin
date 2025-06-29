@@ -3,7 +3,7 @@ import { DataTable, DataTableColumn } from '@/components/composite/DataTable'
 import { useNavigate } from 'react-router-dom'
 import { BaseStatusBadge } from '@/components/base/BaseStatusBadge'
 import { BaseButton } from '@/components/base/BaseButton'
-import { useUsers, useUserActions } from '@/hooks/useUsers'
+import { useAds, useUserActions } from '@/hooks/p2p/useAds'
 import { usePermissions } from '@/hooks/usePermissions'
 import { classNames } from '@/classNames'
 import { formatters } from '@/utils/formatters'
@@ -43,7 +43,7 @@ const UserAvatar: React.FC<{ user: User; size?: 'sm' | 'default' | 'lg' }> = ({
     if (user.firstName && user.lastName) {
       return `${user.firstName[0]}${user.lastName[0]}`
     }
-    return user.email.slice(0, 2).toUpperCase()
+    return user.userCode
   }
 
   return (
@@ -74,43 +74,31 @@ const UserAvatar: React.FC<{ user: User; size?: 'sm' | 'default' | 'lg' }> = ({
 }
 
 // Trading Metrics Component
-const TradingMetrics: React.FC<{ user: User }> = ({ user }) => {
+const TradingMetrics: React.FC<{ user: any }> = ({ user }) => {
   const totalValue = user?.walletBalances?.reduce((sum, balance) => sum + balance.usdValue, 0)
 
   return (
     <div className="flex items-center space-x-4 text-right">
       <div>
+        <div className={`${classNames.text.mono} font-semibold text-gray-100`}>{user?.price}</div>
+        <div className={classNames.text.xs}>Price</div>
+      </div>
+      <div>
         <div className={`${classNames.text.mono} font-semibold text-gray-100`}>
-          {formatters.currency(totalValue)}
+          {user?.quantity}
         </div>
-        <div className={classNames.text.xs}>Portfolio</div>
+        <div className={classNames.text.xs}>Quantity</div>
       </div>
 
       <div>
-        <div className={`${classNames.text.mono} text-gray-300`}>
-          {user?.tradingStats?.totalTrades.toLocaleString()}
-        </div>
-        <div className={classNames.text.xs}>Trades</div>
-      </div>
-
-      <div>
-        <div
-          className={`font-semibold ${
-            user?.tradingStats?.profitLoss >= 0
-              ? classNames.trading.pricePositive
-              : classNames.trading.priceNegative
-          }`}
-        >
-          {user?.tradingStats?.profitLoss >= 0 ? '+' : ''}
-          {formatters.currency(Math.abs(user?.tradingStats?.profitLoss))}
-        </div>
-        <div className={classNames.text.xs}>P&L</div>
+        <div className={`${classNames.text.mono} text-green-300`}>{user?.totalOrder}</div>
+        <div className={classNames.text.xs}>Total Orders</div>
       </div>
     </div>
   )
 }
 
-export const UserTable: React.FC<UserTableProps> = ({
+export const AdsTable: React.FC<UserTableProps> = ({
   filters,
   pagination,
   sort,
@@ -118,7 +106,7 @@ export const UserTable: React.FC<UserTableProps> = ({
   onPageChange,
   onLimitChange,
 }) => {
-  const { data, isLoading, error } = useUsers(filters, pagination, sort)
+  const { data, isLoading, error } = useAds(filters, pagination, sort)
   const { hasPermission } = usePermissions()
   const push = useNavigate()
   const userActions = useUserActions()
@@ -169,22 +157,62 @@ export const UserTable: React.FC<UserTableProps> = ({
             <div className={`${classNames.text.h6} group-hover:text-white transition-colors`}>
               {user.firstName && user?.lastName
                 ? `${user?.firstName} ${user?.lastName}`
-                : user?.username || 'N/A'}
+                : user?.userCode || 'N/A'}
             </div>
-            <div className={`${classNames.text.small} ${classNames.text.mono}`}>{user?.email}</div>
-            <div className="flex items-center space-x-2 mt-1">
-              {user?.isTwoFactorEnabled && (
-                <div className="w-2 h-2 bg-green-400 rounded-full" title="2FA Enabled" />
-              )}
-              {user?.settings?.withdrawalsEnabled && (
-                <div className="w-2 h-2 bg-blue-400 rounded-full" title="Withdrawals Enabled" />
-              )}
-              {user?.perpetualPositions?.length > 0 && (
-                <div className="w-2 h-2 bg-purple-400 rounded-full" title="Active Positions" />
-              )}
+            <div className={`${classNames.text.small} ${classNames.text.mono}`}>
+              {user?.userCode}
             </div>
           </div>
         </div>
+      ),
+    },
+    {
+      key: 'postCode',
+      title: 'Ad ID',
+      render: data => (
+        <div className="flex items-center space-x-4">
+          <div>
+            <div className={`${classNames.text.h6} group-hover:text-white transition-colors`}>
+              {data.postCode}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'firstCoin',
+      title: 'Crypto',
+      render: data => (
+        <div className="flex items-center space-x-4">
+          <div>
+            <div className={`${classNames.text.h6} group-hover:text-white transition-colors`}>
+              {data.firstCoin}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'secondCoin',
+      title: 'Fiat',
+      render: data => (
+        <div className="flex items-center space-x-4">
+          <div>
+            <div className={`${classNames.text.h6} group-hover:text-white transition-colors`}>
+              {data.secondCoin}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'side',
+      title: 'Side',
+      render: user => (
+        <BaseStatusBadge
+          status={['buy', 'sell'][user?.side]}
+          variant={['success', 'error'][user?.side]}
+        />
       ),
     },
     {
@@ -192,59 +220,14 @@ export const UserTable: React.FC<UserTableProps> = ({
       title: 'Status',
       render: user => (
         <BaseStatusBadge
-          status={user?.status?.replace('_', ' ')}
-          variant={
-            user?.status === 'active'
-              ? 'success'
-              : user?.status === 'suspended'
-                ? 'warning'
-                : user?.status === 'banned'
-                  ? 'error'
-                  : 'neutral'
+          status={
+            ['open', 'pending', 'completed', 'cancelled', 'dispute', 'time out'][user?.status]
           }
+          variant={['neutral', 'warning', 'success', 'error', 'warning', 'error'][user?.status]}
         />
       ),
     },
-    {
-      key: 'kycStatus',
-      title: 'Verification',
-      render: user => (
-        <div className="flex items-center space-x-2">
-          <BaseStatusBadge
-            status={user?.kycStatus?.replace('_', ' ')}
-            variant={
-              user?.kycStatus === 'approved'
-                ? 'success'
-                : user?.kycStatus === 'pending'
-                  ? 'warning'
-                  : user?.kycStatus === 'rejected' || user.kycStatus === 'expired'
-                    ? 'error'
-                    : 'neutral'
-            }
-          />
-          {user.kycStatus === 'pending' && (
-            <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
-          )}
-        </div>
-      ),
-    },
-    {
-      key: 'role',
-      title: 'Role',
-      render: user => (
-        <BaseStatusBadge
-          status={user?.role?.replace('_', ' ')}
-          variant={
-            user?.role === 'vip'
-              ? 'warning'
-              : user?.role === 'admin' || user?.role === 'super_admin'
-                ? 'error'
-                : 'info'
-          }
-          icon={user?.role === 'vip' ? <Star className={classNames.icon.xs} /> : undefined}
-        />
-      ),
-    },
+
     {
       key: 'tradingMetrics',
       title: 'Trading Metrics',
@@ -252,17 +235,15 @@ export const UserTable: React.FC<UserTableProps> = ({
       render: user => <TradingMetrics user={user} />,
     },
     {
-      key: 'lastActivity',
-      title: 'Last Activity',
+      key: 'expireAt',
+      title: 'Expired At  ',
       render: user => (
         <div className="text-sm">
-          {user?.lastLoginAt ? (
+          {user?.expireAt ? (
             <div>
-              <div className="text-gray-300 font-medium">
-                {formatters.timeAgo(user.lastLoginAt)}
-              </div>
+              <div className="text-gray-300 font-medium">{formatters.timeAgo(user.expireAt)}</div>
               <div className="text-gray-500 text-xs">
-                {new Date(user?.lastLoginAt).toLocaleDateString()}
+                {new Date(user?.expireAt).toLocaleDateString()}
               </div>
             </div>
           ) : (
@@ -288,49 +269,8 @@ export const UserTable: React.FC<UserTableProps> = ({
             onSelect={() => push(`/users/${user?._id}`)}
           >
             <Eye className={`${classNames.icon.sm} text-blue-400`} />
-            View Profile
+            View
           </DropdownMenu.Item>
-
-          {hasPermission('users.edit') && (
-            <>
-              <DropdownMenu.Item
-                className={classNames.dropdown.item}
-                onSelect={() => handleResetTwoFactor(user)}
-              >
-                <Shield className={`${classNames.icon.sm} text-amber-400`} />
-                Reset 2FA
-              </DropdownMenu.Item>
-
-              <DropdownMenu.Item
-                className={classNames.dropdown.item}
-                onSelect={() => handleToggleWithdrawals(user)}
-              >
-                <Wallet className={`${classNames.icon.sm} text-green-400`} />
-                {user?.settings?.withdrawalsEnabled ? 'Disable' : 'Enable'} Withdrawals
-              </DropdownMenu.Item>
-            </>
-          )}
-
-          {hasPermission('users.ban') && user.status !== 'banned' && (
-            <>
-              <DropdownMenu.Separator className={classNames.dropdown.separator} />
-              <DropdownMenu.Item
-                className={`${classNames.dropdown.item} text-amber-400 hover:bg-amber-900/20`}
-                onSelect={() => handleSuspendUser(user)}
-              >
-                <UserX className={classNames.icon.sm} />
-                Suspend User
-              </DropdownMenu.Item>
-
-              <DropdownMenu.Item
-                className={`${classNames.dropdown.item} text-red-400 hover:bg-red-900/20`}
-                onSelect={() => handleBanUser(user)}
-              >
-                <Ban className={classNames.icon.sm} />
-                Ban User
-              </DropdownMenu.Item>
-            </>
-          )}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>

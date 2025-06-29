@@ -37,6 +37,20 @@ const navigationItems = [
     permissions: ['users.view'],
     badge: '2.4k',
     badgeVariant: 'info' as const,
+    children: [
+      {
+        title: 'User List',
+        href: '/users/list',
+      },
+      {
+        title: 'Balance List',
+        href: '/users/balances',
+      },
+      {
+        title: 'Activity Logs',
+        href: '/users/logs',
+      },
+    ],
   },
   {
     title: 'Wallet Control',
@@ -52,6 +66,32 @@ const navigationItems = [
     permissions: ['trades.view'],
     badge: 'LIVE',
     badgeVariant: 'success' as const,
+  },
+  {
+    title: 'P2P Management',
+    href: '/p2p',
+    icon: Users,
+    permissions: ['p2p.view'],
+    badge: '2.4k',
+    badgeVariant: 'info' as const,
+    children: [
+      {
+        title: 'Pair List',
+        href: '/p2p/pairs',
+      },
+      {
+        title: 'Ads List',
+        href: '/p2p/ads',
+      },
+      {
+        title: 'Order List',
+        href: '/p2p/orders',
+      },
+      {
+        title: 'Dispute List',
+        href: '/p2p/disputes',
+      },
+    ],
   },
   {
     title: 'Analytics Hub',
@@ -96,9 +136,7 @@ const SystemStatus: React.FC<{ collapsed: boolean }> = ({ collapsed }) => {
       <div className="px-2 py-3">
         <div className="flex flex-col items-center space-y-2">
           <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
-          <div className={`${classNames.text.xs} ${classNames.text.mono}`}>
-            {status.latency}ms
-          </div>
+          <div className={`${classNames.text.xs} ${classNames.text.mono}`}>{status.latency}ms</div>
         </div>
       </div>
     )
@@ -142,28 +180,30 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   const location = useLocation()
   const { hasAnyPermission } = usePermissions()
 
-  // const filteredItems = navigationItems.filter(item => 
+  // const filteredItems = navigationItems.filter(item =>
   //   hasAnyPermission(item.permissions)
   // )
   // #FORNOW
   const filteredItems = navigationItems
   return (
-    <aside className={`
+    <aside
+      className={`
     ${classNames.layout.sidebar}
     relative flex flex-col transition-all duration-300 ease-in-out
     ${collapsed ? 'w-20' : 'w-72'}
-  `}>
+  `}
+    >
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-gray-700">
         {!collapsed && (
           <div className="flex items-center space-x-3">
-            <div className={`w-10 h-10 ${classNames.metric.iconGradient.blue} rounded-xl flex items-center justify-center shadow-lg`}>
+            <div
+              className={`w-10 h-10 ${classNames.metric.iconGradient.blue} rounded-xl flex items-center justify-center shadow-lg`}
+            >
               <Zap className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className={classNames.text.gradientBlue}>
-                TradeLynk
-              </h1>
+              <h1 className={classNames.text.gradientBlue}>TradeLynk</h1>
               <p className={classNames.text.caption}>Admin Console</p>
             </div>
           </div>
@@ -173,56 +213,82 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
           className="p-2 rounded-lg hover:bg-gray-700 transition-colors group"
         >
           {collapsed ? (
-            <ChevronRight className={`${classNames.icon.sm} text-gray-400 group-hover:text-gray-100`} />
+            <ChevronRight
+              className={`${classNames.icon.sm} text-gray-400 group-hover:text-gray-100`}
+            />
           ) : (
-            <ChevronLeft className={`${classNames.icon.sm} text-gray-400 group-hover:text-gray-100`} />
+            <ChevronLeft
+              className={`${classNames.icon.sm} text-gray-400 group-hover:text-gray-100`}
+            />
           )}
         </button>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-6 space-y-1">
-        {filteredItems.map((item) => {
-          const isActive = location.pathname === item.href
+        {filteredItems.map(item => {
+          const isActive = location.pathname.startsWith(item.href)
 
           return (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={`
-              group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 relative
-              ${isActive
-                  ? `${classNames.button.variants.primary} shadow-lg`
-                  : 'text-gray-400 hover:text-gray-100 hover:bg-gray-700/50'
-                }
-              ${collapsed ? 'justify-center' : 'justify-between'}
-            `}
-            >
-              <div className="flex items-center">
-                <item.icon className={`
-                ${classNames.icon.default} transition-colors
-                ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-100'}
-                ${!collapsed && 'mr-3'}
-              `} />
-                {!collapsed && (
-                  <span className="truncate">{item.title}</span>
+            <div key={item.href}>
+              <Link
+                to={item.href}
+                className={`
+          group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 relative
+          ${
+            isActive
+              ? `${classNames.button.variants.primary} shadow-lg`
+              : 'text-gray-400 hover:text-gray-100 hover:bg-gray-700/50'
+          }
+          ${collapsed ? 'justify-center' : 'justify-between'}
+        `}
+              >
+                <div className="flex items-center">
+                  <item.icon
+                    className={`
+            ${classNames.icon.default} transition-colors
+            ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-100'}
+            ${!collapsed && 'mr-3'}
+          `}
+                  />
+                  {!collapsed && <span className="truncate">{item.title}</span>}
+                </div>
+
+                {!collapsed && item.badge && (
+                  <BaseStatusBadge
+                    status={item.badge}
+                    variant={item.badgeVariant || 'neutral'}
+                    size="sm"
+                    pulse={item.badge === 'LIVE'}
+                  />
                 )}
-              </div>
+                {isActive && (
+                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-white rounded-r-full" />
+                )}
+              </Link>
 
-              {!collapsed && item.badge && (
-                <BaseStatusBadge
-                  status={item.badge}
-                  variant={item.badgeVariant || 'neutral'}
-                  size="sm"
-                  pulse={item.badge === 'LIVE'}
-                />
+              {/* Render sub-navigation if applicable */}
+              {!collapsed && item.children && isActive && (
+                <div className="ml-8 mt-2 space-y-1">
+                  {item.children.map(child => (
+                    <Link
+                      key={child.href}
+                      to={child.href}
+                      className={`
+                block px-3 py-2 text-sm rounded-md transition-colors
+                ${
+                  location.pathname === child.href
+                    ? 'bg-gray-700 text-white'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                }
+              `}
+                    >
+                      {child.title}
+                    </Link>
+                  ))}
+                </div>
               )}
-
-              {/* Active indicator */}
-              {isActive && (
-                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-white rounded-r-full" />
-              )}
-            </Link>
+            </div>
           )
         })}
       </nav>

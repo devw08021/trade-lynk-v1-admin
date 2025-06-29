@@ -4,38 +4,15 @@ import { RouterProvider, createMemoryRouter } from '@tanstack/react-router'
 import React from 'react'
 
 // Test wrapper with providers
-const AllTheProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  })
 
-  const router = createMemoryRouter([
-    {
-      path: '/',
-      element: <div>{children}</div>,
-    },
-  ])
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  )
-}
-
-const customRender = (
-  ui: React.ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>
-) => render(ui, { wrapper: AllTheProviders, ...options })
+const customRender = (ui: React.ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
+  render(ui, { wrapper: AllTheProviders, ...options })
 
 export * from '@testing-library/react'
 export { customRender as render }
 
 // Mock data generators
-export const mockUser = (overrides?: Partial<User>): User => ({
+export const mockUser = (overrides?: Partial<any>): any => ({
   id: 'test-user-1',
   email: 'test@example.com',
   username: 'testuser',
@@ -84,11 +61,7 @@ export const createMockApiResponse = <T>(data: T, success = true) => ({
   message: success ? undefined : 'Mock error message',
 })
 
-export const createMockPaginatedResponse = <T>(
-  data: T[],
-  page = 1,
-  limit = 20
-): PaginatedResponse<T> => ({
+export const createMockPaginatedResponse = <T>(data: T[], page = 1, limit = 20): any => ({
   data,
   pagination: {
     page,

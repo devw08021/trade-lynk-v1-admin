@@ -1,10 +1,9 @@
-// tsconfig.json
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "esnext",
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
+    "module": "esnext",
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -12,7 +11,9 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "strict": true,
+    "strict": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
@@ -29,6 +30,14 @@
       "@/constants/*": ["./src/constants/*"]
     }
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "checkJs": false,
+  "noImplicitAny": false,
+  "suppressImplicitAnyIndexErrors": true,
+  "skipLibCheck": true,
+  "noEmit": false,
+  "noEmitOnError": false,
+  "allowJs": true,
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"],
+  "noUnusedLocals": false
 }

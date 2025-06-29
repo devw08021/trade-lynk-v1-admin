@@ -132,7 +132,7 @@ export interface DashboardMetrics {
   
   export interface SortOptions {
     field: string
-    direction: 'asc' | 'desc'
+    direction: 1 | -1
   }
   
   export interface PaginationOptions {

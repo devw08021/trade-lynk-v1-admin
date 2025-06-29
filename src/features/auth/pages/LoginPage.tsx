@@ -71,15 +71,13 @@ const LiveMetrics: React.FC = () => {
       {metricsData.map((metric, index) => (
         <BaseCard key={index} variant="glass" padding="sm">
           <div className="text-center space-y-2">
-            <div className={`w-10 h-10 ${classNames.metric.iconGradient[metric.color]} rounded-lg flex items-center justify-center mx-auto`}>
+            <div
+              className={`w-10 h-10 ${classNames.metric.iconGradient[metric.color]} rounded-lg flex items-center justify-center mx-auto`}
+            >
               <metric.icon className="w-5 h-5 text-white" />
             </div>
-            <div className={`${classNames.text.h6} text-white`}>
-              {metric.value}
-            </div>
-            <div className={classNames.text.xs}>
-              {metric.label}
-            </div>
+            <div className={`${classNames.text.h6} text-white`}>{metric.value}</div>
+            <div className={classNames.text.xs}>{metric.label}</div>
           </div>
         </BaseCard>
       ))}
@@ -98,9 +96,7 @@ const SecurityFeatures: React.FC = () => {
 
   return (
     <div className="space-y-3">
-      <h4 className={`${classNames.text.h6} text-blue-200 mb-4`}>
-        Enterprise Security
-      </h4>
+      <h4 className={`${classNames.text.h6} text-blue-200 mb-4`}>Enterprise Security</h4>
       {features.map((feature, index) => (
         <div key={index} className="flex items-center space-x-3">
           <div className="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center">
@@ -125,7 +121,7 @@ export const LoginPage: React.FC = () => {
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: 'admin@crypto.com',
-      password: 'admin123',
+      password: 'Test@123',
     },
   })
 
@@ -141,12 +137,14 @@ export const LoginPage: React.FC = () => {
         <div className="absolute inset-0 bg-grid-pattern opacity-10" />
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl" />
-        
+
         {/* Content */}
         <div className="relative z-10">
           {/* Header */}
           <div className="flex items-center space-x-4 mb-12">
-            <div className={`w-16 h-16 ${classNames.metric.iconGradient.blue} rounded-2xl flex items-center justify-center shadow-2xl`}>
+            <div
+              className={`w-16 h-16 ${classNames.metric.iconGradient.blue} rounded-2xl flex items-center justify-center shadow-2xl`}
+            >
               <Zap className="w-8 h-8 text-white" />
             </div>
             <div>
@@ -154,7 +152,7 @@ export const LoginPage: React.FC = () => {
               <p className="text-blue-200 text-lg font-medium">Professional Trading Platform</p>
             </div>
           </div>
-          
+
           {/* Main Content */}
           <div className="space-y-8">
             <div className="space-y-4">
@@ -165,11 +163,11 @@ export const LoginPage: React.FC = () => {
                 </span>
               </h2>
               <p className={`${classNames.text.bodyLarge} text-blue-100 max-w-lg`}>
-                Monitor, manage, and optimize your trading platform with enterprise-grade tools, 
+                Monitor, manage, and optimize your trading platform with enterprise-grade tools,
                 real-time analytics, and comprehensive user management capabilities.
               </p>
             </div>
-            
+
             {/* Feature Highlights */}
             <div className="grid grid-cols-3 gap-8 py-8">
               <div className="text-center">
@@ -190,13 +188,15 @@ export const LoginPage: React.FC = () => {
             <SecurityFeatures />
           </div>
         </div>
-        
+
         {/* Live Metrics */}
         <div className="relative z-10 space-y-4">
           <LiveMetrics />
           <div className="flex items-center space-x-2 text-sm text-blue-200">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            <span>Real-time platform metrics • Last updated: {new Date().toLocaleTimeString()}</span>
+            <span>
+              Real-time platform metrics • Last updated: {new Date().toLocaleTimeString()}
+            </span>
           </div>
         </div>
       </div>
@@ -205,11 +205,13 @@ export const LoginPage: React.FC = () => {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative">
         {/* Mobile Background */}
         <div className="lg:hidden absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-gray-900/40 backdrop-blur-sm" />
-        
+
         <div className="w-full max-w-md space-y-8 relative z-10">
           {/* Mobile Header */}
           <div className="text-center lg:hidden">
-            <div className={`inline-flex items-center justify-center w-16 h-16 ${classNames.metric.iconGradient.blue} rounded-2xl mb-6 shadow-2xl`}>
+            <div
+              className={`inline-flex items-center justify-center w-16 h-16 ${classNames.metric.iconGradient.blue} rounded-2xl mb-6 shadow-2xl`}
+            >
               <Zap className="w-8 h-8 text-white" />
             </div>
             <h1 className={`${classNames.text.h2} text-white mb-2`}>TradeLynk Admin</h1>
@@ -221,7 +223,9 @@ export const LoginPage: React.FC = () => {
             {/* Card Header */}
             <div className={classNames.card.header}>
               <div className="flex items-center space-x-3">
-                <div className={`w-12 h-12 ${classNames.metric.iconGradient.blue} rounded-lg flex items-center justify-center`}>
+                <div
+                  className={`w-12 h-12 ${classNames.metric.iconGradient.blue} rounded-lg flex items-center justify-center`}
+                >
                   <Shield className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -230,7 +234,7 @@ export const LoginPage: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Card Content */}
             <div className={classNames.card.content}>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -300,17 +304,21 @@ export const LoginPage: React.FC = () => {
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                     <BaseStatusBadge status="Demo Environment" variant="success" size="sm" />
                   </div>
-                  
+
                   <div className="grid grid-cols-1 gap-3 text-sm">
                     <div className={classNames.utils.spaceBetween}>
                       <span className={classNames.text.muted}>Email:</span>
-                      <code className={`${classNames.text.mono} text-blue-400 bg-gray-900/50 px-2 py-1 rounded`}>
+                      <code
+                        className={`${classNames.text.mono} text-blue-400 bg-gray-900/50 px-2 py-1 rounded`}
+                      >
                         admin@crypto.com
                       </code>
                     </div>
                     <div className={classNames.utils.spaceBetween}>
                       <span className={classNames.text.muted}>Password:</span>
-                      <code className={`${classNames.text.mono} text-blue-400 bg-gray-900/50 px-2 py-1 rounded`}>
+                      <code
+                        className={`${classNames.text.mono} text-blue-400 bg-gray-900/50 px-2 py-1 rounded`}
+                      >
                         admin123
                       </code>
                     </div>
@@ -343,8 +351,8 @@ export const LoginPage: React.FC = () => {
               TradeLynk Admin Console v2.1.0
             </p>
             <p className={`${classNames.text.xs} text-gray-500 max-w-sm mx-auto`}>
-              © 2024 TradeLynk Technologies. Enterprise-grade cryptocurrency exchange platform 
-              with institutional-level security and performance.
+              © 2024 TradeLynk Technologies. Enterprise-grade cryptocurrency exchange platform with
+              institutional-level security and performance.
             </p>
           </div>
         </div>

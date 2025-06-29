@@ -3,7 +3,7 @@ import { DataTable, DataTableColumn } from '@/components/composite/DataTable'
 import { useNavigate } from 'react-router-dom'
 import { BaseStatusBadge } from '@/components/base/BaseStatusBadge'
 import { BaseButton } from '@/components/base/BaseButton'
-import { useUsers, useUserActions } from '@/hooks/useUsers'
+import { userOrders, useUserActions } from '@/hooks/p2p/useOrder'
 import { usePermissions } from '@/hooks/usePermissions'
 import { classNames } from '@/classNames'
 import { formatters } from '@/utils/formatters'
@@ -74,43 +74,26 @@ const UserAvatar: React.FC<{ user: User; size?: 'sm' | 'default' | 'lg' }> = ({
 }
 
 // Trading Metrics Component
-const TradingMetrics: React.FC<{ user: User }> = ({ user }) => {
-  const totalValue = user?.walletBalances?.reduce((sum, balance) => sum + balance.usdValue, 0)
-
+const TradingMetrics: React.FC<{ user: any }> = ({ user }) => {
   return (
     <div className="flex items-center space-x-4 text-right">
       <div>
         <div className={`${classNames.text.mono} font-semibold text-gray-100`}>
-          {formatters.currency(totalValue)}
+          {user?.receiveValue}
         </div>
-        <div className={classNames.text.xs}>Portfolio</div>
+        <div className={classNames.text.xs}>Price</div>
       </div>
-
       <div>
-        <div className={`${classNames.text.mono} text-gray-300`}>
-          {user?.tradingStats?.totalTrades.toLocaleString()}
+        <div className={`${classNames.text.mono} font-semibold text-gray-100`}>
+          {user?.payValue}
         </div>
-        <div className={classNames.text.xs}>Trades</div>
-      </div>
-
-      <div>
-        <div
-          className={`font-semibold ${
-            user?.tradingStats?.profitLoss >= 0
-              ? classNames.trading.pricePositive
-              : classNames.trading.priceNegative
-          }`}
-        >
-          {user?.tradingStats?.profitLoss >= 0 ? '+' : ''}
-          {formatters.currency(Math.abs(user?.tradingStats?.profitLoss))}
-        </div>
-        <div className={classNames.text.xs}>P&L</div>
+        <div className={classNames.text.xs}>Quantity</div>
       </div>
     </div>
   )
 }
 
-export const UserTable: React.FC<UserTableProps> = ({
+export const OrderTable: React.FC<UserTableProps> = ({
   filters,
   pagination,
   sort,
@@ -118,7 +101,7 @@ export const UserTable: React.FC<UserTableProps> = ({
   onPageChange,
   onLimitChange,
 }) => {
-  const { data, isLoading, error } = useUsers(filters, pagination, sort)
+  const { data, isLoading, error } = userOrders(filters, pagination, sort)
   const { hasPermission } = usePermissions()
   const push = useNavigate()
   const userActions = useUserActions()
@@ -160,31 +143,119 @@ export const UserTable: React.FC<UserTableProps> = ({
 
   const columns: DataTableColumn<User>[] = [
     {
-      key: 'user',
-      title: 'User',
+      key: 'createdAt',
+      title: 'Created At  ',
+      render: user => (
+        <div className="text-sm">
+          {user?.createdAt ? (
+            <div>
+              <div className="text-gray-300 font-medium">{formatters.timeAgo(user.createdAt)}</div>
+              <div className="text-gray-500 text-xs">
+                {new Date(user?.createdAt).toLocaleDateString()}
+              </div>
+            </div>
+          ) : (
+            <span className="text-gray-500">Never logged in</span>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: 'postCode',
+      title: 'Ad ID',
+      render: data => (
+        <div className="flex items-center space-x-4">
+          <div>
+            <div className={`${classNames.text.h6} group-hover:text-white transition-colors`}>
+              {data.postCode}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'orderCode',
+      title: 'Order ID',
+      render: data => (
+        <div className="flex items-center space-x-4">
+          <div>
+            <div className={`${classNames.text.h6} group-hover:text-white transition-colors`}>
+              {data.orderCode}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'buyerCode',
+      title: 'Buyer',
       render: user => (
         <div className="flex items-center space-x-4">
-          <UserAvatar user={user} />
           <div>
             <div className={`${classNames.text.h6} group-hover:text-white transition-colors`}>
               {user.firstName && user?.lastName
                 ? `${user?.firstName} ${user?.lastName}`
-                : user?.username || 'N/A'}
+                : user?.buyerCode || 'N/A'}
             </div>
-            <div className={`${classNames.text.small} ${classNames.text.mono}`}>{user?.email}</div>
-            <div className="flex items-center space-x-2 mt-1">
-              {user?.isTwoFactorEnabled && (
-                <div className="w-2 h-2 bg-green-400 rounded-full" title="2FA Enabled" />
-              )}
-              {user?.settings?.withdrawalsEnabled && (
-                <div className="w-2 h-2 bg-blue-400 rounded-full" title="Withdrawals Enabled" />
-              )}
-              {user?.perpetualPositions?.length > 0 && (
-                <div className="w-2 h-2 bg-purple-400 rounded-full" title="Active Positions" />
-              )}
+            <div className={`${classNames.text.small} ${classNames.text.mono}`}>
+              {user?.buyerCode}
             </div>
           </div>
         </div>
+      ),
+    },
+    {
+      key: 'sellerCode',
+      title: 'Seller',
+      render: user => (
+        <div className="flex items-center space-x-4">
+          <div>
+            <div className={`${classNames.text.h6} group-hover:text-white transition-colors`}>
+              {user.firstName && user?.lastName
+                ? `${user?.firstName} ${user?.lastName}`
+                : user?.sellerCode || 'N/A'}
+            </div>
+            <div className={`${classNames.text.small} ${classNames.text.mono}`}>
+              {user?.sellerCode}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'firstCoin',
+      title: 'Crypto',
+      render: data => (
+        <div className="flex items-center space-x-4">
+          <div>
+            <div className={`${classNames.text.h6} group-hover:text-white transition-colors`}>
+              {data.firstCoin}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'secondCoin',
+      title: 'Fiat',
+      render: data => (
+        <div className="flex items-center space-x-4">
+          <div>
+            <div className={`${classNames.text.h6} group-hover:text-white transition-colors`}>
+              {data.secondCoin}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'side',
+      title: 'Side',
+      render: user => (
+        <BaseStatusBadge
+          status={['buy', 'sell'][user?.side]}
+          variant={['success', 'error'][user?.side]}
+        />
       ),
     },
     {
@@ -192,56 +263,14 @@ export const UserTable: React.FC<UserTableProps> = ({
       title: 'Status',
       render: user => (
         <BaseStatusBadge
-          status={user?.status?.replace('_', ' ')}
-          variant={
-            user?.status === 'active'
-              ? 'success'
-              : user?.status === 'suspended'
-                ? 'warning'
-                : user?.status === 'banned'
-                  ? 'error'
-                  : 'neutral'
+          status={
+            ['open', 'paid', 'completed', 'cancelled', 'dispute', 'dispute resolved', 'time out'][
+              user?.status
+            ]
           }
-        />
-      ),
-    },
-    {
-      key: 'kycStatus',
-      title: 'Verification',
-      render: user => (
-        <div className="flex items-center space-x-2">
-          <BaseStatusBadge
-            status={user?.kycStatus?.replace('_', ' ')}
-            variant={
-              user?.kycStatus === 'approved'
-                ? 'success'
-                : user?.kycStatus === 'pending'
-                  ? 'warning'
-                  : user?.kycStatus === 'rejected' || user.kycStatus === 'expired'
-                    ? 'error'
-                    : 'neutral'
-            }
-          />
-          {user.kycStatus === 'pending' && (
-            <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
-          )}
-        </div>
-      ),
-    },
-    {
-      key: 'role',
-      title: 'Role',
-      render: user => (
-        <BaseStatusBadge
-          status={user?.role?.replace('_', ' ')}
           variant={
-            user?.role === 'vip'
-              ? 'warning'
-              : user?.role === 'admin' || user?.role === 'super_admin'
-                ? 'error'
-                : 'info'
+            ['neutral', 'warning', 'success', 'error', 'warning', 'success', 'error'][user?.status]
           }
-          icon={user?.role === 'vip' ? <Star className={classNames.icon.xs} /> : undefined}
         />
       ),
     },
@@ -252,17 +281,15 @@ export const UserTable: React.FC<UserTableProps> = ({
       render: user => <TradingMetrics user={user} />,
     },
     {
-      key: 'lastActivity',
-      title: 'Last Activity',
+      key: 'endTime',
+      title: 'Expired At  ',
       render: user => (
         <div className="text-sm">
-          {user?.lastLoginAt ? (
+          {user?.endTime ? (
             <div>
-              <div className="text-gray-300 font-medium">
-                {formatters.timeAgo(user.lastLoginAt)}
-              </div>
+              <div className="text-gray-300 font-medium">{formatters.timeAgo(user.endTime)}</div>
               <div className="text-gray-500 text-xs">
-                {new Date(user?.lastLoginAt).toLocaleDateString()}
+                {new Date(user?.endTime).toLocaleDateString()}
               </div>
             </div>
           ) : (
@@ -288,7 +315,7 @@ export const UserTable: React.FC<UserTableProps> = ({
             onSelect={() => push(`/users/${user?._id}`)}
           >
             <Eye className={`${classNames.icon.sm} text-blue-400`} />
-            View Profile
+            View
           </DropdownMenu.Item>
 
           {hasPermission('users.edit') && (

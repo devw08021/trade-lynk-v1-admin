@@ -4,12 +4,9 @@ import type { APIResponse, PaginatedResponse } from '@/types'
 class APIService {
   private baseURL = import.meta.env.VITE_API_URL || '/api'
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<APIResponse<T>> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<APIResponse<T>> {
     const { token } = useAuthStore.getState()
-    
+
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -20,7 +17,7 @@ class APIService {
     }
 
     try {
-      const response = await fetch(`${this.baseURL}${endpoint}`, config)
+      const response = await fetch(`${endpoint}`, config)
       const data = await response.json()
 
       if (!response.ok) {
@@ -62,7 +59,7 @@ class APIService {
     params?: Record<string, string | number>
   ): Promise<PaginatedResponse<T>> {
     const searchParams = new URLSearchParams()
-    
+
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         searchParams.append(key, value.toString())
