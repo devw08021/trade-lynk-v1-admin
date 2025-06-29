@@ -20,9 +20,9 @@ const UsersProfile = React.lazy(() =>
 )
 
 // Wallet
-const WalletsPage = React.lazy(() =>
-  import('@/features/wallets/pages/WalletsPage').then(m => ({ default: m.WalletsPage }))
-)
+// const WalletsPage = React.lazy(() =>
+//   import('@/features/wallets/pages/WalletsPage').then(m => ({ default: m.WalletsPage }))
+// )
 
 //P2P
 const P2PState = React.lazy(() =>
@@ -137,14 +137,14 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-  {
-    path: '/wallets',
-    element: (
-      <ProtectedRoute>
-        <WalletsPage />
-      </ProtectedRoute>
-    ),
-  },
+  // {
+  //   path: '/wallets',
+  //   element: (
+  //     <ProtectedRoute>
+  //       <WalletsPage />
+  //     </ProtectedRoute>
+  //   ),
+  // },
 
   // p2p
   {

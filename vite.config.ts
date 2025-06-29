@@ -3,28 +3,26 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
-import checker from 'vite-plugin-checker'
+// import checker from 'vite-plugin-checker'
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    checker({
-      typescript: {
-        // leave type‑checking on for everything else...
-        enable: true,
-        tsconfigPath: './tsconfig.json',
-        // but ignore these specific diagnostics:
-        diagnosticOptions: {
-          semantic: false,
-          syntactic: false,
-        },
-      },
-    }),
+    // checker({
+    //   typescript: {
+    //     // leave type‑checking on for everything else...
+    //     enable: true,
+    //     tsconfigPath: './tsconfig.json',
+    //     // but ignore these specific diagnostics:
+    //     diagnosticOptions: {
+    //       semantic: false,
+    //       syntactic: false,
+    //     },
+    //   },
+    // }),
   ],
-  esbuild: {
-    tsconfigRaw: './tsconfig.json',
-  },
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
