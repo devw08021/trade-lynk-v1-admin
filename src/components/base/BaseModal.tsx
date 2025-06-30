@@ -26,9 +26,9 @@ export const BaseModal: React.FC<BaseModalProps> = ({
   closeButton = true,
 }) => {
   return (
-    <Dialog.Root open={isOpen} onOpenChange={onClose}>
+    <Dialog.Root open={isOpen} onOpenChange={onClose} >
       <Dialog.Portal>
-        <Dialog.Overlay className={classNames.modal.overlay} />
+        <Dialog.Overlay className={"fixed inset-0 bg-black/50"} />
         <Dialog.Content className={cn(
           classNames.modal.content,
           classNames.modal.sizes[size]

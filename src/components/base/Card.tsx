@@ -15,4 +15,4 @@ const Card: React.FC<CardProps> = ({ children, className = '' }) => {
   )
 }
 
-export default Cards
+export default Card

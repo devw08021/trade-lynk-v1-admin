@@ -125,7 +125,7 @@ export const UsersPage: React.FC = () => {
         {/* User Detail Modal */}
         <UserDetailModal
           userId={selectedUserId}
-          isOpen={isModalOpen}
+          isOpen={true}
           onClose={handleCloseModal}
         />
       </div>

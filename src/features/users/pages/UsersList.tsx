@@ -21,7 +21,7 @@ export const UsersList: React.FC = () => {
   const { data, isLoading } = useUsers(filters, pagination, sort)
 
   const handleUserClick = (user: User) => {
-    setSelectedUserId(user.id)
+    setSelectedUserId(user?._id)
     setIsModalOpen(true)
   }
 
