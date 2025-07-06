@@ -2,10 +2,10 @@ import React from 'react'
 import { PageHeader } from '@/components/composite/PageHeader'
 import { FiltersComponent } from '../components/Filters'
 import { PairTable } from '../components/PairTable'
-import { UserDetailModal } from '../components/UserDetailModal'
+import { ModelDetails } from '../components/UserDetailModal'
 import { BaseCard } from '@/components/base/BaseCard'
 import { BaseButton } from '@/components/base/BaseButton'
-import { usePair } from '@/hooks/p2p/usePair'
+import { usePairs } from '@/hooks/p2p/usePair'
 import { classNames } from '@/classNames'
 import { Download, Plus, Users } from 'lucide-react'
 import type { User, UserFilters, PaginationOptions, SortOptions } from '@/types'
@@ -17,9 +17,9 @@ export const PairList: React.FC = () => {
   const [selectedUserId, setSelectedUserId] = React.useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
 
-  const { data, isLoading } = usePair(filters, pagination, sort)
+  const { data, isLoading } = usePairs(filters, pagination, sort)
   const handleUserClick = (user: User) => {
-    setSelectedUserId(user.id)
+    setSelectedUserId(user?._id)
     setIsModalOpen(true)
   }
 
@@ -54,7 +54,7 @@ export const PairList: React.FC = () => {
         Export Data
       </BaseButton>
       <BaseButton>
-        <Plus className={classNames.icon.sm} />
+        <Plus className={classNames.icon.sm} onClick={()=>setIsModalOpen(true)}/>
         Add Pair
       </BaseButton>
     </>
@@ -112,6 +112,8 @@ export const PairList: React.FC = () => {
       {/* Users Table */}
       <BaseCard padding="none">
         <PairTable
+          data={data}
+          isLoading={isLoading}
           filters={filters}
           pagination={pagination}
           sort={sort}
@@ -122,7 +124,7 @@ export const PairList: React.FC = () => {
       </BaseCard>
 
       {/* User Detail Modal */}
-      <UserDetailModal userId={selectedUserId} isOpen={isModalOpen} onClose={handleCloseModal} />
+      <ModelDetails _id={selectedUserId} isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   )
 }

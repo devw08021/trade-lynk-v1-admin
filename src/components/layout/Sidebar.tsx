@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Zap,
+  Coins
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -115,6 +116,21 @@ const navigationItems = [
     permissions: ['admin.logs'],
     badge: null,
   },
+  {
+    title: 'Coin  Management',
+    href: '/coins',
+    icon: Coins,
+    permissions: ['coins.view'],
+    badge: '2.4k',
+    badgeVariant: 'info' as const,  
+    children: [
+      {
+        title: 'Coin List',
+        href: '/coins/list',
+      },  
+    ],
+  },
+
   {
     title: 'System Config',
     href: '/settings',
@@ -235,11 +251,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                 to={item.href}
                 className={`
           group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 relative
-          ${
-            isActive
-              ? `${classNames.button.variants.primary} shadow-lg`
-              : 'text-gray-400 hover:text-gray-100 hover:bg-gray-700/50'
-          }
+          ${isActive
+                    ? `${classNames.button.variants.primary} shadow-lg`
+                    : 'text-gray-400 hover:text-gray-100 hover:bg-gray-700/50'
+                  }
           ${collapsed ? 'justify-center' : 'justify-between'}
         `}
               >
@@ -276,11 +291,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
                       to={child.href}
                       className={`
                 block px-3 py-2 text-sm rounded-md transition-colors
-                ${
-                  location.pathname === child.href
-                    ? 'bg-gray-700 text-white'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-                }
+                ${location.pathname === child.href
+                          ? 'bg-gray-700 text-white'
+                          : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                        }
               `}
                     >
                       {child.title}

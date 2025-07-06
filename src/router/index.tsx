@@ -48,6 +48,18 @@ const LoginPage = React.lazy(() =>
   import('@/features/auth/pages/LoginPage').then(m => ({ default: m.LoginPage }))
 )
 
+
+// coin
+const CoinManage = React.lazy(() =>
+  import('@/features/coin/pages/Manage').then(m => ({ default: m.Page }))
+)
+const CoinList = React.lazy(() =>
+  import('@/features/coin/pages/List').then(m => ({ default: m.List }))
+)
+
+
+
+
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuthStore()
 
@@ -137,6 +149,25 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
+
+  // Coin
+  {
+    path: '/coins',
+    element: (
+      <ProtectedRoute>
+        <CoinManage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/coins/list',
+    element: (
+      <ProtectedRoute>
+        <CoinList />
+      </ProtectedRoute>
+    ),
+  },
   // {
   //   path: '/wallets',
   //   element: (
@@ -157,14 +188,6 @@ const router = createBrowserRouter([
   },
   {
     path: '/p2p/pairs',
-    element: (
-      <ProtectedRoute>
-        <P2PPair />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/p2p/:pairId',
     element: (
       <ProtectedRoute>
         <P2PPair />

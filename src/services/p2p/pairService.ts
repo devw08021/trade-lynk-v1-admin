@@ -19,37 +19,16 @@ export const pairService = {
   },
 
   async getPair(id: string): Promise<User> {
-    const response = await apiService.get<User>(`${import.meta.env.VITE_P2P_API_URL}/pairs/${id}`)
+    const response = await apiService.get<User>(`${import.meta.env.VITE_P2P_API_URL}/pair/${id}`)
     return response.data!
   },
 
-  async updateUser(id: string, updates: Partial<User>): Promise<User> {
-    const response = await apiService.put<User>(`/admin/pairs/${id}`, updates)
-    return response.data!
+  async addPair(updates: Partial<any>): Promise<any> {
+    const response = await apiService.post<any>(`${import.meta.env.VITE_P2P_API_URL}/pair`, updates)
+    return response!
   },
-
-  async banUser(id: string, reason: string): Promise<void> {
-    await apiService.post(`/admin/pairs/${id}/ban`, { reason })
-  },
-
-  async unbanUser(id: string): Promise<void> {
-    await apiService.post(`/admin/pairs/${id}/unban`, {})
-  },
-
-  async suspendUser(id: string, reason: string, duration?: number): Promise<void> {
-    await apiService.post(`/admin/pairs/${id}/suspend`, { reason, duration })
-  },
-
-  async resetTwoFactor(id: string): Promise<void> {
-    await apiService.post(`/admin/pairs/${id}/reset-2fa`, {})
-  },
-
-  async toggleWithdrawals(id: string, enabled: boolean): Promise<void> {
-    await apiService.post(`/admin/users/${id}/toggle-withdrawals`, { enabled })
-  },
-
-  async getUserAuditLog(id: string): Promise<any[]> {
-    const response = await apiService.get<any[]>(`/admin/users/${id}/audit-log`)
-    return response.data!
+  async updatePair(id: string, updates: Partial<any>): Promise<any> {
+    const response = await apiService.put<any>(`${import.meta.env.VITE_P2P_API_URL}/pair/${id}`, updates)
+    return response!
   },
 }

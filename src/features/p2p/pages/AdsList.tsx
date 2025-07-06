@@ -122,7 +122,7 @@ export const AdsList: React.FC = () => {
       </BaseCard>
 
       {/* User Detail Modal */}
-      <UserDetailModal userId={selectedUserId} isOpen={isModalOpen} onClose={handleCloseModal} />
+      {/* <UserDetailModal userId={selectedUserId} isOpen={isModalOpen} onClose={handleCloseModal} /> */}
     </div>
   )
 }

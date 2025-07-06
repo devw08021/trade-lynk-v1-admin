@@ -1,27 +1,27 @@
 import React from 'react'
 import { PageHeader } from '@/components/composite/PageHeader'
-import { QuickStats } from '../components/QuickStats'
-import { FiltersComponent } from '../components/Filters'
-import { ModelDetails } from '../components/UserDetailModal'
+import { UserQuickStats } from '../components/UserQuickStats'
+import { UserFiltersComponent } from '../components/UserFilters'
+import { UserTable } from '../components/UserTable'
+import { UserDetailModal } from '../components/UserDetailModal'
 import { BaseCard } from '@/components/base/BaseCard'
 import { BaseButton } from '@/components/base/BaseButton'
-import { usePairs } from '@/hooks/p2p/usePair'
+import { useCoins } from '@/hooks/useCoins'
 import { classNames } from '@/classNames'
 import { Download, Plus, Users } from 'lucide-react'
 import type { User, UserFilters, PaginationOptions, SortOptions } from '@/types'
-import { DisputeTable } from '../components/DisputeTable'
 
-export const Manage: React.FC = () => {
+export const Page: React.FC = () => {
   const [filters, setFilters] = React.useState<UserFilters>({})
   const [pagination, setPagination] = React.useState<PaginationOptions>({ page: 0, limit: 20 })
   const [sort, setSort] = React.useState<SortOptions>({ field: 'createdAt', direction: -1 })
   const [selectedUserId, setSelectedUserId] = React.useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
 
-  const { data, isLoading } = usePairs(filters, pagination, sort)
+  const { data, isLoading } = useCoins(filters, pagination, sort)
 
   const handleUserClick = (user: User) => {
-    setSelectedUserId(user.id)
+    setSelectedUserId(user?._id)
     setIsModalOpen(true)
   }
 
@@ -52,25 +52,28 @@ export const Manage: React.FC = () => {
       </BaseButton>
       <BaseButton>
         <Plus className={classNames.icon.sm} />
-        Add User
+        Add Coin
       </BaseButton>
     </>
   )
 
   return (
-    <div className={classNames.layout.page}>
+    <div className={classNames.layout.page}>  
       <PageHeader
-        title="P2P Management"
-        subtitle="Monitor and manage all platform P2P orders advanced controls"
+        title="Coin Management"
+        subtitle="Monitor and manage all platform Coin with advanced controls"
         // actions={pageActions}
-        breadcrumbs={[{ label: 'P2P', href: '/p2p' }, { label: 'P2P Management' }]}
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/dashboard' },
+          { label: 'Coin Management' },
+        ]}
       />
 
       {/* Quick Stats */}
-      <QuickStats />
+      <UserQuickStats />
 
       {/* Advanced Filters */}
-      <FiltersComponent
+      <UserFiltersComponent
         filters={filters}
         onFiltersChange={handleFiltersChange}
         onClearFilters={handleClearFilters}
@@ -85,8 +88,7 @@ export const Manage: React.FC = () => {
                 <Users className={classNames.icon.sm} />
                 <span className={classNames.text.muted}>Showing</span>
                 <span className={`${classNames.text.body} font-semibold`}>
-                  {(pagination.page - 1) * pagination.limit + 1}-
-                  {Math.min(pagination.page * pagination.limit, data?.pagination?.total)}
+                  {((pagination.page - 1) * pagination.limit) + 1}-{Math.min(pagination.page * pagination.limit, data?.pagination?.total)}
                 </span>
                 <span className={classNames.text.muted}>of</span>
                 <span className={`${classNames.text.body} font-semibold`}>
@@ -112,7 +114,9 @@ export const Manage: React.FC = () => {
 
       {/* Users Table */}
       <BaseCard padding="none">
-        <DisputeTable
+        <UserTable
+          data={data}
+          isLoading={isLoading}
           filters={filters}
           pagination={pagination}
           sort={sort}
@@ -121,7 +125,11 @@ export const Manage: React.FC = () => {
       </BaseCard>
 
       {/* User Detail Modal */}
-      {/* <ModelDetails _id={selectedUserId} isOpen={isModalOpen} onClose={handleCloseModal} /> */}
+      <UserDetailModal
+        _id={selectedUserId}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   )
 }

@@ -21,8 +21,11 @@ class APIService {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.message || 'API request failed')
+        const error = new Error(data?.message || 'API request failed') as any
+        error.response = { ...data }
+        throw error
       }
+
 
       return data
     } catch (error) {

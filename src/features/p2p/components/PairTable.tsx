@@ -3,7 +3,7 @@ import { DataTable, DataTableColumn } from '@/components/composite/DataTable'
 import { useNavigate } from 'react-router-dom'
 import { BaseStatusBadge } from '@/components/base/BaseStatusBadge'
 import { BaseButton } from '@/components/base/BaseButton'
-import { usePair, useUserActions } from '@/hooks/p2p/usePair'
+import { usePair } from '@/hooks/p2p/usePair'
 import { usePermissions } from '@/hooks/usePermissions'
 import { classNames } from '@/classNames'
 import { formatters } from '@/utils/formatters'
@@ -13,6 +13,8 @@ import type { User, UserFilters, PaginationOptions, SortOptions } from '@/types'
 import { Pagination } from './Pagination'
 
 interface UserTableProps {
+  data:any
+  isLoading: boolean
   filters: UserFilters
   pagination: PaginationOptions
   sort: SortOptions
@@ -67,6 +69,8 @@ const Avatar: React.FC<{ pair: any; size?: 'sm' | 'default' | 'lg' }> = ({
 }
 
 export const PairTable: React.FC<UserTableProps> = ({
+  data,
+  isLoading,
   filters,
   pagination,
   sort,
@@ -74,45 +78,10 @@ export const PairTable: React.FC<UserTableProps> = ({
   onPageChange,
   onLimitChange,
 }) => {
-  const { data, isLoading, error } = usePair(filters, pagination, sort)
+  // const { data, isLoading, error } = usePair(filters, pagination, sort)
   const { hasPermission } = usePermissions()
   const push = useNavigate()
-  const userActions = useUserActions()
 
-  const handleBanUser = (user: User) => {
-    if (confirm(`Are you sure you want to ban ${user.email}?`)) {
-      userActions.banUser.mutate({
-        id: user.id,
-        reason: 'Banned via admin panel',
-      })
-    }
-  }
-
-  const handleSuspendUser = (user: User) => {
-    if (confirm(`Are you sure you want to suspend ${user.email}?`)) {
-      userActions.suspendUser.mutate({
-        id: user.id,
-        reason: 'Suspended via admin panel',
-        duration: 7,
-      })
-    }
-  }
-
-  const handleResetTwoFactor = (user: User) => {
-    if (confirm(`Reset 2FA for ${user.email}?`)) {
-      userActions.resetTwoFactor.mutate(user.id)
-    }
-  }
-
-  const handleToggleWithdrawals = (user: User) => {
-    const action = user.settings.withdrawalsEnabled ? 'disable' : 'enable'
-    if (confirm(`${action} withdrawals for ${user.email}?`)) {
-      userActions.toggleWithdrawals.mutate({
-        id: user.id,
-        enabled: !user.settings.withdrawalsEnabled,
-      })
-    }
-  }
 
   const columns: DataTableColumn<User>[] = [
     {
