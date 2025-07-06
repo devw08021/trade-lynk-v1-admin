@@ -30,11 +30,11 @@ const Avatar: React.FC<{ pair: any; size?: 'sm' | 'default' | 'lg' }> = ({
 }) => {
   const getStatusGradient = (status: string) => {
     switch (status) {
-      case 'active':
+      case 1:
         return 'green'
       case 'suspended':
         return 'amber'
-      case 'banned':
+      case 2:
         return 'red'
       default:
         return 'gray'

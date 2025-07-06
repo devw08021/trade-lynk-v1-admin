@@ -1,14 +1,16 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { FilterPanel } from '@/components/composite/FilterPanel'
 import type { UserFilters } from '@/types'
 
 interface UserFiltersProps {
+  isOpen: boolean
   filters: UserFilters
   onFiltersChange: (filters: UserFilters) => void
   onClearFilters: () => void
 }
 
 export const FiltersComponent: React.FC<UserFiltersProps> = ({
+  isOpen = false,
   filters,
   onFiltersChange,
   onClearFilters,
@@ -74,15 +76,20 @@ export const FiltersComponent: React.FC<UserFiltersProps> = ({
   }
 
   return (
-    <FilterPanel
-      searchValue={filters.search || ''}
-      onSearchChange={handleSearchChange}
-      searchPlaceholder="Search users by name, email, or username..."
-      filters={filterConfigs}
-      activeFilters={filters}
-      onFilterChange={handleFilterChange}
-      onClearFilters={onClearFilters}
-      onApplyFilters={() => console.log('Apply filters')}
-    />
+    <Fragment>
+      {isOpen && (
+        <FilterPanel
+          searchValue={filters.search || ''}
+          onSearchChange={handleSearchChange}
+          searchPlaceholder="Search users by name, email, or username..."
+          filters={filterConfigs}
+          activeFilters={filters}
+          onFilterChange={handleFilterChange}
+          onClearFilters={onClearFilters}
+          onApplyFilters={() => console.log('Apply filters')}
+        />
+      )}
+    </Fragment>
+
   )
 }

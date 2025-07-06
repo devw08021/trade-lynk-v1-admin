@@ -7,7 +7,7 @@ import { BaseCard } from '@/components/base/BaseCard'
 import { BaseButton } from '@/components/base/BaseButton'
 import { usePairs } from '@/hooks/p2p/usePair'
 import { classNames } from '@/classNames'
-import { Download, Plus, Users } from 'lucide-react'
+import { Download, Plus, Users, Minus } from 'lucide-react'
 import type { User, UserFilters, PaginationOptions, SortOptions } from '@/types'
 
 export const PairList: React.FC = () => {
@@ -16,6 +16,7 @@ export const PairList: React.FC = () => {
   const [sort, setSort] = React.useState<SortOptions>({ field: 'createdAt', direction: -1 })
   const [selectedUserId, setSelectedUserId] = React.useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
+  const [isFilter, setIsFilter] = React.useState(false)
 
   const { data, isLoading } = usePairs(filters, pagination, sort)
   const handleUserClick = (user: User) => {
@@ -53,8 +54,15 @@ export const PairList: React.FC = () => {
         <Download className={classNames.icon.sm} />
         Export Data
       </BaseButton>
-      <BaseButton>
-        <Plus className={classNames.icon.sm} onClick={()=>setIsModalOpen(true)}/>
+      <BaseButton onClick={() => setIsFilter(!isFilter)} >
+        {
+          isFilter ? <Minus className={classNames.icon.sm} onClick={() => setIsFilter(!isFilter)} />
+            : <Plus className={classNames.icon.sm} />
+        }
+        Filters
+      </BaseButton>
+      <BaseButton onClick={() => setIsModalOpen(true)}>
+        <Plus className={classNames.icon.sm} />
         Add Pair
       </BaseButton>
     </>
@@ -70,6 +78,7 @@ export const PairList: React.FC = () => {
       />
       {/* Advanced Filters */}
       <FiltersComponent
+        isOpen={isFilter}
         filters={filters}
         onFiltersChange={handleFiltersChange}
         onClearFilters={handleClearFilters}
@@ -84,14 +93,15 @@ export const PairList: React.FC = () => {
                 <Users className={classNames.icon.sm} />
                 <span className={classNames.text.muted}>Showing</span>
                 <span className={`${classNames.text.body} font-semibold`}>
-                  {(pagination.page - 1) * pagination.limit + 1}-
-                  {Math.min(pagination.page * pagination.limit, data.count)}
+                  {data.count > 0
+                    ? `${Math.max(1, (pagination.page) * pagination.limit)}–${Math.min((pagination.page + 1) * pagination.limit, data.count)}`
+                    : '0–0'}
                 </span>
                 <span className={classNames.text.muted}>of</span>
                 <span className={`${classNames.text.body} font-semibold`}>
                   {data.count.toLocaleString()}
                 </span>
-                <span className={classNames.text.muted}>users</span>
+                <span className={classNames.text.muted}>Pairs</span>
               </div>
 
               {Object.values(filters).filter(Boolean).length > 0 && (

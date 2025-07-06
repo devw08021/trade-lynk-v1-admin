@@ -7,7 +7,7 @@ import { BaseCard } from '@/components/base/BaseCard'
 import { BaseButton } from '@/components/base/BaseButton'
 import { usePairs } from '@/hooks/p2p/usePair'
 import { classNames } from '@/classNames'
-import { Download, Plus, Users } from 'lucide-react'
+import { Download, Plus, Users, Minus } from 'lucide-react'
 import type { User, UserFilters, PaginationOptions, SortOptions } from '@/types'
 import { DisputeTable } from '../components/DisputeTable'
 
@@ -17,6 +17,7 @@ export const Manage: React.FC = () => {
   const [sort, setSort] = React.useState<SortOptions>({ field: 'createdAt', direction: -1 })
   const [selectedUserId, setSelectedUserId] = React.useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
+  const [isFilter, setIsFilter] = React.useState(false)
 
   const { data, isLoading } = usePairs(filters, pagination, sort)
 
@@ -85,8 +86,9 @@ export const Manage: React.FC = () => {
                 <Users className={classNames.icon.sm} />
                 <span className={classNames.text.muted}>Showing</span>
                 <span className={`${classNames.text.body} font-semibold`}>
-                  {(pagination.page - 1) * pagination.limit + 1}-
-                  {Math.min(pagination.page * pagination.limit, data?.pagination?.total)}
+                  {data.count > 0
+                    ? `${Math.max(1, (pagination.page) * pagination.limit)}–${Math.min((pagination.page + 1) * pagination.limit, data.count)}`
+                    : '0–0'}
                 </span>
                 <span className={classNames.text.muted}>of</span>
                 <span className={`${classNames.text.body} font-semibold`}>

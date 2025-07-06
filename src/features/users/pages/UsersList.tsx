@@ -80,8 +80,9 @@ export const UsersList: React.FC = () => {
                 <Users className={classNames.icon.sm} />
                 <span className={classNames.text.muted}>Showing</span>
                 <span className={`${classNames.text.body} font-semibold`}>
-                  {(pagination.page - 1) * pagination.limit + 1}-
-                  {Math.min(pagination.page * pagination.limit, data.count)}
+                  {data.count > 0
+                    ? `${Math.max(1, (pagination.page) * pagination.limit)}–${Math.min((pagination.page + 1) * pagination.limit, data.count)}`
+                    : '0–0'}
                 </span>
                 <span className={classNames.text.muted}>of</span>
                 <span className={`${classNames.text.body} font-semibold`}>

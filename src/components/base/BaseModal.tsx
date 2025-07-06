@@ -9,7 +9,7 @@ interface BaseModalProps {
   onClose: () => void
   title?: string
   subtitle?: string
-  size?: keyof typeof classNames.modal.sizes
+  size?: string
   children: React.ReactNode
   footer?: React.ReactNode
   closeButton?: boolean
@@ -26,18 +26,13 @@ export const BaseModal: React.FC<BaseModalProps> = ({
   closeButton = true,
 }) => {
   return (
-    <Dialog.Root open={isOpen} onOpenChange={onClose}>
+    <Dialog.Root open={isOpen} onOpenChange={onClose} >
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-        <Dialog.Content
-          onInteractOutside={(e) => e.preventDefault()} // <-- Add this line
-
-          className={cn(
-            classNames.modal.content,
-            classNames.modal.sizes[size],
-            'flex flex-col max-h-[90vh]' // <-- ADD THIS
-          )}
-        >
+        <Dialog.Overlay className={"fixed inset-0 bg-black/50"} />
+        <Dialog.Content className={cn(
+          classNames.modal.content,
+          // classNames.modal.sizes[size]
+        )}>
           {/* Header */}
           {(title || closeButton) && (
             <div className={classNames.modal.header}>
@@ -51,7 +46,7 @@ export const BaseModal: React.FC<BaseModalProps> = ({
                   <p className={classNames.text.muted}>{subtitle}</p>
                 )}
               </div>
-
+              
               {closeButton && (
                 <Dialog.Close asChild>
                   <BaseButton variant="ghost" size="icon">
@@ -62,13 +57,8 @@ export const BaseModal: React.FC<BaseModalProps> = ({
             </div>
           )}
 
-          {/* Body with scroll */}
-          <div
-            className={cn(
-              classNames.modal.body,
-              'overflow-y-auto px-4 flex-1'
-            )}
-          >
+          {/* Body */}
+          <div className={classNames.modal.body}>
             {children}
           </div>
 

@@ -142,7 +142,7 @@ export const ModelDetails: React.FC<ModalProps> = ({ _id, isOpen, onClose }) => 
     <BaseModal
       isOpen={isOpen}
       onClose={handleModelClose}
-      size="lg"
+      size="sm"
       footer={modalFooter}
       title={`${_id ? 'Update' : 'Add'} Pair`}
     >

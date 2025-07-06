@@ -7,15 +7,17 @@ import { BaseCard } from '@/components/base/BaseCard'
 import { BaseButton } from '@/components/base/BaseButton'
 import { userOrders } from '@/hooks/p2p/useOrder'
 import { classNames } from '@/classNames'
-import { Download, Plus, Users } from 'lucide-react'
+import { Download, Plus, Users, Minus } from 'lucide-react'
 import type { User, UserFilters, PaginationOptions, SortOptions } from '@/types'
 
 export const OrderList: React.FC = () => {
   const [filters, setFilters] = React.useState<UserFilters>({})
   const [pagination, setPagination] = React.useState<PaginationOptions>({ page: 0, limit: 10 })
+  console.log('pagination: ', pagination);
   const [sort, setSort] = React.useState<SortOptions>({ field: 'createdAt', direction: -1 })
   const [selectedUserId, setSelectedUserId] = React.useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
+  const [isFilter, setIsFilter] = React.useState(false)
 
   const { data, isLoading } = userOrders(filters, pagination, sort)
   const handleUserClick = (user: User) => {
@@ -53,9 +55,12 @@ export const OrderList: React.FC = () => {
         <Download className={classNames.icon.sm} />
         Export Data
       </BaseButton>
-      <BaseButton>
-        <Plus className={classNames.icon.sm} />
-        Add Pair
+      <BaseButton onClick={() => setIsFilter(!isFilter)} >
+        {
+          isFilter ? <Minus className={classNames.icon.sm} onClick={() => setIsFilter(!isFilter)} />
+            : <Plus className={classNames.icon.sm} />
+        }
+        Filters
       </BaseButton>
     </>
   )
@@ -70,6 +75,7 @@ export const OrderList: React.FC = () => {
       />
       {/* Advanced Filters */}
       <FiltersComponent
+        isOpen={isFilter}
         filters={filters}
         onFiltersChange={handleFiltersChange}
         onClearFilters={handleClearFilters}
@@ -84,8 +90,9 @@ export const OrderList: React.FC = () => {
                 <Users className={classNames.icon.sm} />
                 <span className={classNames.text.muted}>Showing</span>
                 <span className={`${classNames.text.body} font-semibold`}>
-                  {(pagination.page - 1) * pagination.limit + 1}-
-                  {Math.min(pagination.page * pagination.limit, data.count)}
+                  {data.count > 0
+                    ? `${Math.max(1, (pagination.page) * pagination.limit)}–${Math.min((pagination.page + 1) * pagination.limit, data.count)}`
+                    : '0–0'}
                 </span>
                 <span className={classNames.text.muted}>of</span>
                 <span className={`${classNames.text.body} font-semibold`}>
