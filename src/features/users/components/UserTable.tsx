@@ -285,7 +285,8 @@ export const UserTable: React.FC<UserTableProps> = ({
         <DropdownMenu.Content className={classNames.dropdown.content}>
           <DropdownMenu.Item
             className={classNames.dropdown.item}
-            onSelect={() => push(`/users/${user?._id}`)}
+            // onSelect={() => push(`/users/${user?._id}`)}
+            onSelect={()=>onUserClick(user)}
           >
             <Eye className={`${classNames.icon.sm} text-blue-400`} />
             View Profile

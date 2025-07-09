@@ -30,6 +30,9 @@ import {
 import * as Tabs from '@radix-ui/react-tabs'
 import type { User as UserType } from '@/types'
 
+// component user details
+import { WalletDetails } from './userDetails/wallet'
+
 interface UserDetailModalProps {
   userId: string | null
   isOpen: boolean
@@ -191,7 +194,7 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({
                   <div className="flex items-center space-x-2">
                     <BaseStatusBadge
                       status={user?.userCode}
-                      variant={'success' }
+                      variant={'success'}
                       icon={<Contact className={classNames.icon.xs} />}
                     />
                   </div>
@@ -453,13 +456,7 @@ export const UserDetailModal: React.FC<UserDetailModalProps> = ({
               </Tabs.Content>
 
               <Tabs.Content value="wallets" className={classNames.tabs.content}>
-                <div className="text-center py-12">
-                  <Wallet className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className={classNames.text.h4}>Wallet Management</h3>
-                  <p className={classNames.text.muted}>
-                    User wallet balances and transaction history
-                  </p>
-                </div>
+                <WalletDetails userId={user?._id} />
               </Tabs.Content>
 
               <Tabs.Content value="security" className={classNames.tabs.content}>

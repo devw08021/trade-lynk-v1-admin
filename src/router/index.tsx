@@ -16,7 +16,7 @@ const UsersList = React.lazy(() =>
   import('@/features/users/pages/UsersList').then(m => ({ default: m.UsersList }))
 )
 const UsersProfile = React.lazy(() =>
-  import('@/features/users/pages/userProfile').then(m => ({ default: m.UserProfile }))
+  import('@/features/users/pages/userProe22file').then(m => ({ default: m.UserProfile }))
 )
 
 // Wallet
